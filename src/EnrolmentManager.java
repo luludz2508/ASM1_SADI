@@ -3,15 +3,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class EnrolmentManager {
     static Scanner in = new Scanner(System.in);
 
     //static Course c[] = new Course[100];
-    static List<Course> courseAv = new ArrayList();
-    static List<Student> studentAv = new ArrayList();
+    static ArrayList<Course> courseAv = new ArrayList<>();
+    static ArrayList<Student> studentAv = new ArrayList<>();
     static ArrayList<StudentEnrollment> Enrolments = new ArrayList<>();
 
     public static void mainMenu() {
@@ -33,7 +32,7 @@ public class EnrolmentManager {
         return option;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         String fileName=readFile();
         int opt = 0;
         while (opt != '0') {
@@ -63,7 +62,6 @@ public class EnrolmentManager {
                     break;
             }
         }
-        ;
     }
 
 
@@ -196,36 +194,28 @@ public class EnrolmentManager {
     }
 
     public static void Delete(String studentID, String Sem) {
-        ArrayList<String> tempCourseDeletable = new ArrayList<>();
-        String result2 = "";
+        boolean deleted=false;
         for (StudentEnrollment enrolment : Enrolments) {
             if (enrolment.getStudent().getSid().equals(studentID) && enrolment.getSemester().equals(Sem)) {
                 System.out.println(enrolment.getCourse().getCid());
                 assert false;
-                tempCourseDeletable.add(enrolment.getCourse().getCid());
             }
 
         }
         System.out.println("Please enter the course ID you want to delete:");
         String courseID = in.nextLine();
-        for (String course : tempCourseDeletable) {
-            if (course.equals(courseID)) {
-                result2 = course;
-                break;
-            }
-        }
-        if (result2.equals("")) {
-            System.out.println("No Course available with given ID.");
-            return;
-        }
+
         for (StudentEnrollment enrolment : Enrolments) {
             if (enrolment.getStudent().getSid().equals(studentID) && enrolment.getSemester().equals(Sem) && enrolment.getCourse().getCid().equals(courseID)) {
                 System.out.println("Successfully delete: " + courseID + " from " + studentID);
                 Enrolments.remove(enrolment);
+                deleted=true;
                 break;
             }
         }
-
+        if (!deleted){
+            System.out.println("Cannot delete " + courseID + " from " + studentID);
+        }
     }
 
     public static void getOne() {
@@ -359,7 +349,7 @@ public class EnrolmentManager {
         }
     }
 
-    public static String readFile() throws IOException {
+    public static String readFile() {
         boolean done = false;
         String fileName = "";
         while (!done) {
@@ -369,7 +359,7 @@ public class EnrolmentManager {
             if (!fileName.equals("")) {
                 defaultFile = "src/"+fileName;
             }
-            String line = "";
+            String line;
             String splitBy = ",";
             try {
                 BufferedReader in = new BufferedReader(new FileReader(defaultFile));
@@ -378,7 +368,6 @@ public class EnrolmentManager {
 
                     boolean sAdded = false, cAdded = false;
                     String[] data = line.split(splitBy);
-//            System.out.println("Student [ID]= " + data[0] + ", name= " + data[1] + ", birthdate =" + data[2] + ", course ID= " + data[3] + ", course name= " + data[4] + ", course credit= " + data[5] + ", semester= " + data[6]);
                     for (Student student : studentAv) {
                         if (student.getSid().equals(data[0])) {
                             sAdded = true;
@@ -411,14 +400,13 @@ public class EnrolmentManager {
         return fileName;
     }
 
-    public static boolean getAll() {
+    public static void getAll() {
         if (Enrolments.size() == 0) {
             System.out.println("Nothing to show");
-            return false;
+            return;
         }
         for (StudentEnrollment a : Enrolments) {
             System.out.print(a.toString());
         }
-        return false;
     }
 }
